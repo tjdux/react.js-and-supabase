@@ -1,39 +1,130 @@
 import "./App.css";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Toaster } from "@/components/ui/sonner";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { toast } from "sonner";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { BookOpen } from "lucide-react"; // 별도 설치 없이 lucide react 사용 가능
 
 function App() {
+  const [isActive, setIsActive] = useState(false);
   return (
-    <div>
-      {/* 타이포그래피 */}
-      <div className="text-xs text-red-500">text-xs</div>
-      <div className="text-sm text-[rgb(100,30,200)]">text-sm</div>
-      <div className="text-lg font-bold">text-lg</div>
-      <div className="text-xl font-extrabold">text-xl</div>
-      <div className="text-2xl font-black">text-2xl</div>
-      <div className="text-[13px]">text-13px</div>
-
-      {/* 백그라운드 컬러 */}
-      <div className="bg-amber-500">amber-500</div>
-
-      {/* 사이즈 */}
-      <div className="h-20 w-20 bg-blue-500">box</div>
-
-      {/* 여백 */}
-      <div className="m-5 h-50 w-50 bg-red-300 px-5 py-3">
-        <div className="h-full w-full bg-blue-300"></div>
+    <div className="p-5">
+      <AlertDialog>
+        <AlertDialogTrigger className="pr-3">AlertDialog</AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => console.log("Cancel")}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={() => console.log("Continue")}>
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <Dialog>
+        <DialogTrigger className="pr-3">Dialog</DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.😓
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button>
+            <BookOpen className="stroke-red-100" />
+            Popover
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent>Place content for the popover here.</PopoverContent>
+      </Popover>
+      <Carousel className="mx-10" opts={{ loop: true }}>
+        <CarouselContent>
+          <CarouselItem className="basis-1/3">1</CarouselItem>
+          <CarouselItem className="basis-1/3">2</CarouselItem>
+          <CarouselItem className="basis-1/3">3</CarouselItem>
+          <CarouselItem className="basis-1/3">4</CarouselItem>
+          <CarouselItem className="basis-1/3">5</CarouselItem>
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+      <Toaster />
+      <Input placeholder="입력" value={"기본값"} />
+      <Textarea placeholder="Type your message here" />
+      <Button onClick={() => setIsActive((isActive) => !isActive)}>
+        Button!
+      </Button>
+      <Button
+        onClick={() => {
+          toast("토스트 메시지", {
+            position: "top-center",
+          });
+        }}
+      >
+        Toast
+      </Button>
+      <Button variant={"ghost"}>Button!!</Button>
+      <Button variant={"link"}>Button!!</Button>
+      <Button variant={"outline"}>Button!!</Button>
+      <Button variant={"secondary"}>Button!!</Button>
+      <div
+        className={cn(
+          "w-10 text-sm",
+          isActive ? "text-green-500" : "text-red-500",
+        )}
+      >
+        isActive
       </div>
-
-      {/* 보더 */}
-      <div className="m-5 rounded-md border-x border-y-2 border-green-300">
-        border
-      </div>
-
-      {/* flex */}
-      <div className="flex items-center justify-evenly">
-        <div className="h-10 w-10 border">1</div>
-        <div className="h-20 w-10 flex-1 border">2</div>
-        <div className="h-30 w-10 border">3</div>
-        <div className="h-40 w-10 border">4</div>
-      </div>
+      <div className="text-primary">Primary</div>
+      <div className="text-muted">Muted</div>
+      <div className="text-destructive">Destructive</div>
     </div>
   );
 }
