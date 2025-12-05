@@ -12,6 +12,8 @@ export function useCreateTodoMutation() {
     // Event Handler
     onMutate: () => {},
     onSettled: () => {},
+
+    // newTodo: createTodo 함수의 반환값
     onSuccess: (newTodo) => {
       // todos 캐시 데이터 무효화 => refetching
       // queryClient.invalidateQueries({
