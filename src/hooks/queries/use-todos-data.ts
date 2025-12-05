@@ -1,9 +1,10 @@
 import { fetchTodos } from "@/api/fetch-todos";
+import { QUERY_KEYS } from "@/lib/constants";
 import { useQuery } from "@tanstack/react-query";
 
 export function useTodosData() {
   return useQuery({
     queryFn: fetchTodos,
-    queryKey: ["todos"], // 캐시를 식별하는 고유 키
+    queryKey: QUERY_KEYS.todo.list,
   });
 }
