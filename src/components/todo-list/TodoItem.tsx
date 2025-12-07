@@ -2,14 +2,19 @@ import { Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 import { useUpdateTodoMutation } from "@/hooks/mutations/use-update-todo-mutation";
+import { useDeleteTodoMutation } from "@/hooks/mutations/use-delete-todo-mutation";
 
 export default function TodoItem({ id, content, isDone }: Todo) {
-  const { mutate } = useUpdateTodoMutation();
+  const { mutate: deleteTodo, isPending: isDeleteTodoPending } =
+    useDeleteTodoMutation();
+  const { mutate: updateTodo } = useUpdateTodoMutation();
 
-  const handleDeleteClick = () => {};
+  const handleDeleteClick = () => {
+    deleteTodo(id);
+  };
 
   const handleCheckboxClick = () => {
-    mutate({
+    updateTodo({
       id,
       isDone: !isDone,
     });
@@ -22,12 +27,17 @@ export default function TodoItem({ id, content, isDone }: Todo) {
           type={"checkbox"}
           checked={isDone}
           onClick={handleCheckboxClick}
+          disabled={isDeleteTodoPending}
         />
         <Link to={`/todolist/${id}`} className={isDone ? "line-through" : ""}>
           {content}
         </Link>
       </div>
-      <Button variant={"destructive"} onClick={handleDeleteClick}>
+      <Button
+        variant={"destructive"}
+        onClick={handleDeleteClick}
+        disabled={isDeleteTodoPending}
+      >
         <Trash />
       </Button>
     </div>
