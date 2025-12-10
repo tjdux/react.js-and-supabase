@@ -10,40 +10,37 @@ export function useUpdateTodoMutation() {
 
     // 비동기 요청이 시작됐을 때 (낙관적 업데이트 시점)
     onMutate: async (updatedTodo) => {
-      // 데이터 조회 요청이 있다면 취소
+      // 더 과거에 발생한 데이터 조회 요청이 있다면 취소
       await queryClient.cancelQueries({
-        queryKey: QUERY_KEYS.todo.list,
+        queryKey: QUERY_KEYS.todo.detail(updatedTodo.id),
       });
 
-      const prevTodos = queryClient.getQueryData<Todo[]>(QUERY_KEYS.todo.list);
+      const prevTodo = queryClient.getQueryData<Todo>(
+        QUERY_KEYS.todo.detail(updatedTodo.id),
+      );
 
-      queryClient.setQueryData<Todo[]>(QUERY_KEYS.todo.list, (prevTodos) => {
-        if (!prevTodos) return [];
-        return prevTodos.map((todo) =>
-          todo.id === updatedTodo.id ? { ...todo, ...updatedTodo } : todo,
-        );
-      });
+      queryClient.setQueryData<Todo>(
+        QUERY_KEYS.todo.detail(updatedTodo.id),
+        (prevTodo) => {
+          if (!prevTodo) return;
+          return {
+            ...prevTodo,
+            ...updateTodo,
+          };
+        },
+      );
 
-      return {
-        prevTodos,
-      };
+      return { prevTodo };
     },
 
     // 업데이트 실패 시 캐시 데이터 원상 복구
     onError: (error, variable, context) => {
-      if (context && context.prevTodos) {
-        queryClient.setQueryData<Todo[]>(
-          QUERY_KEYS.todo.list,
-          context.prevTodos,
+      if (context && context.prevTodo) {
+        queryClient.setQueryData<Todo>(
+          QUERY_KEYS.todo.detail(context.prevTodo.id),
+          context.prevTodo,
         );
       }
-    },
-
-    // 요청이 종료되었을 때 캐시 데이터를 무효화
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.todo.list,
-      });
     },
   });
 }

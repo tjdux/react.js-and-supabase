@@ -15,16 +15,17 @@ export function useCreateTodoMutation() {
 
     // newTodo: createTodo 함수의 반환값
     onSuccess: (newTodo) => {
-      // todos 캐시 데이터 무효화 => refetching
-      // queryClient.invalidateQueries({
-      //   queryKey: QUERY_KEYS.todo.list,
-      // });
-
-      // 캐시 데이터 수정
-      queryClient.setQueryData<Todo[]>(QUERY_KEYS.todo.list, (prevTodos) => {
-        if (!prevTodos) return [newTodo];
-        return [...prevTodos, newTodo];
-      });
+      queryClient.setQueryData<Todo>(
+        QUERY_KEYS.todo.detail(newTodo.id),
+        newTodo,
+      );
+      queryClient.setQueryData<string[]>(
+        QUERY_KEYS.todo.list,
+        (prevTodoIds) => {
+          if (!prevTodoIds) return [newTodo.id];
+          return [...prevTodoIds, newTodo.id];
+        },
+      );
     },
     onError: (error) => {
       window.alert(error.message);
