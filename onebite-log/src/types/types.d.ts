@@ -3,7 +3,7 @@ import { type Database } from "@/database.types";
 type PostEntity = Database["public"]["Tables"]["post"]["Row"];
 type ProfileEntity = Database["public"]["Tables"]["profile"]["Row"];
 
-type Post = PostEntity & { author: ProfileEntity };
+type Post = PostEntity & { author: ProfileEntity; isLiked: boolean };
 
 type UseMutationCallback = {
   onSuccess?: () => void;
