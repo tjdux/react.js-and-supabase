@@ -1,14 +1,45 @@
 import { togglePostLike } from "@/api/post";
-import type { UseMutationCallback } from "@/types/types";
-import { useMutation } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/lib/constants";
+import type { Post, UseMutationCallback } from "@/types/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function useTogglePostLike(calllbacks?: UseMutationCallback) {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: togglePostLike,
+    onMutate: async ({ postId }) => {
+      await queryClient.cancelQueries({
+        queryKey: QUERY_KEYS.post.byId(postId),
+      });
+
+      const prevPost = queryClient.getQueryData<Post>(
+        QUERY_KEYS.post.byId(postId),
+      );
+
+      queryClient.setQueryData<Post>(QUERY_KEYS.post.byId(postId), (post) => {
+        if (!post) throw new Error("포스트가 존재하지 않습니다.");
+        return {
+          ...post,
+          isLiked: !post.isLiked,
+          like_count: post.isLiked ? post.like_count - 1 : post.like_count + 1,
+        };
+      });
+
+      return {
+        prevPost,
+      };
+    },
     onSuccess: () => {
       if (calllbacks?.onSuccess) calllbacks.onSuccess();
     },
-    onError: (error) => {
+    onError: (error, _, context) => {
+      if (context && context.prevPost) {
+        queryClient.setQueryData(
+          QUERY_KEYS.post.byId(context.prevPost.id),
+          context.prevPost,
+        );
+      }
       if (calllbacks?.onError) calllbacks.onError(error);
     },
   });
