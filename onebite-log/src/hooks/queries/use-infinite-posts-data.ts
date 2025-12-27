@@ -5,7 +5,7 @@ import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 
 const PAGE_SIZE = 5;
 
-export function useInfinitePostsData() {
+export function useInfinitePostsData(authorId?: string) {
   const queryClient = useQueryClient();
   const session = useSession();
 
@@ -14,13 +14,20 @@ export function useInfinitePostsData() {
       const from = pageParam * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      const posts = await fetchPosts({ from, to, userId: session!.user.id });
+      const posts = await fetchPosts({
+        from,
+        to,
+        userId: session!.user.id,
+        authorId,
+      });
       posts.forEach((post) => {
         queryClient.setQueryData(QUERY_KEYS.post.byId(post.id), post);
       });
       return posts.map((post) => post.id);
     },
-    queryKey: QUERY_KEYS.post.list,
+    queryKey: authorId
+      ? QUERY_KEYS.post.userList(authorId)
+      : QUERY_KEYS.post.list,
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
       if (lastPage.length < PAGE_SIZE) return undefined;
